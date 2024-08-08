@@ -1,21 +1,50 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
+import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
 export class UserService {
-  show(id: number) {
-    return 'This is a single user with id: ' + id;
+
+  constructor(private prisma: PrismaService) {
   }
 
-  create(body: CreateUserDto) {
-    return body;
+  async show(id: number) {
+    try {
+      return await this.prisma.user.findFirst({
+        where: {
+          id: id,
+        },
+      });
+    } catch (e) {
+      throw new HttpException(e.message, 500);
+    }
   }
 
-  index() {
-    return 'This is the list of all users';
+  async create(body: CreateUserDto) {
+    try {
+      return await this.prisma.user.create({
+        data: body,
+      });
+    } catch (e) {
+      throw new HttpException(e.message, 500);
+    }
   }
 
-  delete(userId) {
-    return 'This user is going to be deleted ID: ' + userId;
+  async index() {
+    try {
+      return await this.prisma.user.findMany({});
+    } catch (e) {
+      throw new HttpException(e.message, 500);
+    }
+  }
+
+  async delete(id) {
+    try {
+      return await this.prisma.user.delete({
+        where: { id: Number(id) },
+      });
+    } catch (e) {
+      throw new HttpException(e.message, 500);
+    }
   }
 }
