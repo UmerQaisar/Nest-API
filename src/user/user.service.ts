@@ -20,6 +20,18 @@ export class UserService {
     }
   }
 
+  async findByEmail(email: string) {
+    try {
+      return await this.prisma.user.findFirst({
+        where: {
+          email: email,
+        },
+      });
+    } catch (e) {
+      throw new HttpException(e.message, 500);
+    }
+  }
+
   async create(body: CreateUserDto) {
     try {
       return await this.prisma.user.create({
